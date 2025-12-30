@@ -1,3 +1,4 @@
+
 Below is a **complete, professional README.md** you can directly copy-paste into your project.
 This is **resume-ready + GitHub-ready + interview-ready**.
 
@@ -220,3 +221,5 @@ get_customer_spend(con, "John")
 
 **Ashish Prajapati**
 Data Engineer / GenAI Enthusiast
+
+# genai_assistant
