@@ -222,4 +222,3 @@ get_customer_spend(con, "John")
 **Ashish Prajapati**
 Data Engineer / GenAI Enthusiast
 
-# genai_assistant
