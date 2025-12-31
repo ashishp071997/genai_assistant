@@ -1,16 +1,10 @@
-# app.py
 from .db import init_db, get_customer_spend
 from .rag.retriever import retrieve
 from .classifier import classify_question
 from pydantic import BaseModel
-import duckdb
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
-#Adding for production 
-app = FastAPI(title="Genai Assistant")
-
-# Initialize DB once (IMPORTANT)
-con =init_db()
+app = FastAPI(title="GenAI Assistant")
 
 
 # ----------------------
@@ -33,25 +27,33 @@ def health():
 # ----------------------
 @app.post("/query")
 def query(req: QueryRequest):
-    question = req.question
-    mode = classify_question(question)
+    try:
+        question = req.question
+        mode = classify_question(question)
+        context = ""
 
-    context = ""
+        # Create DB connection per request (SAFE)
+        con = init_db()
 
-    if mode in ["SQL", "BOTH"]:
-        if "john" in question.lower():
-            result = get_customer_spend(con, "John")
-            context += f"John total spend: {result[1]}\n"
+        if mode in ["SQL", "BOTH"]:
+            if "john" in question.lower():
+                result = get_customer_spend(con, "John")
+                context += f"John total spend: {result[1]}\n"
+            else:
+                context += "No customer identified for SQL query.\n"
 
-    if mode in ["RAG", "BOTH"]:
-        docs = retrieve(question)
-        context += "Policy Info:\n" + "".join(docs)
+        if mode in ["RAG", "BOTH"]:
+            docs = retrieve(question)
+            context += "Policy Info:\n" + "\n".join(docs)
 
-    return{ 
-        "question": question,
-        "mode": mode,
-        "answer": f"Answer based on verified data:\n{context}"
-    }
+        return {
+            "question": question,
+            "mode": mode,
+            "answer": f"Answer based on verified data:\n{context}"
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 #CLI Code 

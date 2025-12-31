@@ -1,6 +1,13 @@
-duckdb
 fastapi
 uvicorn
-sentence-transformers
+
+duckdb
+pandas
+numpy
+
 faiss-cpu
-pydantic
+
+sentence-transformers==2.2.2
+torch==2.1.2+cpu
+transformers==4.35.2
+scikit-learn
